@@ -6,7 +6,7 @@ topics: ["hetzner", "gcp", "terraform", "docker", "cloudflare"]
 published: false
 ---
 
-個人開発でWebサービスを量産したい。でも Cloud Run に常時起動サービスを10個並べると月1万円。GCE の無料枠は3つが限界。「GCP のエコシステムは好きだけど、コンピュートだけ安くしたい」——この課題を Hetzner CX23（月€5）+ Cloudflare + GCP Secret Manager + Terraform で解決しました。この記事では、実際に7サービスを月額約700円で運用しているインフラの設計思想から具体的な構成まで、テックブログとして再現可能なレベルで解説します。
+個人開発でWebサービスを量産したい。でも Cloud Run に常時起動サービスを10個並べると月1万円。GCE の無料枠は3つが限界——。Hetzner CX23（月€5）+ Cloudflare + GCP Secret Manager + Terraform を組み合わせたら、**7サービスが月額約700円で動く**マルチクラウド構成ができました。GCP の好きな部分は残したまま、コンピュートだけ安くする。この記事ではその設計と構築手順を、手元で再現できるレベルで共有します。
 
 ## 個人開発のコンピュートコスト問題は深刻
 
@@ -63,7 +63,7 @@ Cloud Run で月1万円かかっていた構成が、700円で収まります。
 - **権限管理**: GCP IAM（SA + secretAccessor で最小権限の原則を実現）
 - **Terraform state**: GCS バケット（バージョニング有効、5世代まで保持）
 - **DNS**: Cloudflare（無料、高速、Terraform プロバイダー対応）
-- **SSL / CDN / WAF**: Cloudflare（証明書管理不要、DDoS 防御付き）
+- **SSL / CDN / WAF**: Cloudflare + Caddy（Full (strict) で end-to-end 暗号化、証明書は Caddy が自動管理、DDoS 防御付き）
 - **死活監視**: GCE e2-micro + Uptime Kuma（Always Free で無料）
 - **コンテナ管理 UI**: Portainer CE on Hetzner（ブラウザからログ・再起動・リソース監視）
 - **メール送信**: AWS SES（$0.10/1,000通、月数百通なら実質数円）
@@ -91,7 +91,7 @@ graph LR
 ```mermaid
 graph LR
     User[ユーザー] -->|HTTPS| CF[Cloudflare<br/>DNS / SSL終端 / Access制御]
-    CF -->|HTTP| FW[Hetzner Firewall<br/>Cloudflare IPのみ許可]
+    CF -->|HTTPS| FW[Hetzner Firewall<br/>Cloudflare IPのみ許可]
     FW --> Caddy[Caddy<br/>リバースプロキシ]
     Caddy --> S1[サービス1]
     Caddy --> S2[サービス2]
@@ -107,41 +107,41 @@ Cloudflare は DNS だけではありません。この構成では4つの役割
 
 サービスを1つ追加すれば、DNS レコードも自動的に作られます。手動で Cloudflare のダッシュボードを操作する必要はありません。
 
-### SSL 終端（Flexible モード）
+### SSL 終端（Full (strict) モード）
 
-Cloudflare の SSL/TLS 暗号化モード「Flexible」を採用しています。
+Cloudflare の SSL/TLS 暗号化モードは **Full (strict)** を採用しています。
 
 - ユーザー → Cloudflare 間: **HTTPS**（Cloudflare が証明書を自動管理）
-- Cloudflare → Hetzner（オリジン）間: **HTTP**
+- Cloudflare → Hetzner（オリジン）間: **HTTPS**（Caddy が証明書を自動管理）
 
-この構成のメリットは、Hetzner 側で SSL 証明書を一切管理する必要がないことです。Caddy（リバースプロキシ）の設定も `http://` で書くだけです。
+当初は Flexible モード（Cloudflare-オリジン間は HTTP）で運用していました。しかし認証機能を持つサービス（Better Auth 等）が増えてきたタイミングで、Cloudflare-オリジン間の通信も暗号化すべきと判断し、Full (strict) に移行しました。
+
+「Full (strict) にすると証明書管理が面倒になるのでは？」と思うかもしれません。実際には、Caddy の **Cloudflare DNS チャレンジ**を使えば証明書の取得・更新が完全に自動化されます。Let's Encrypt の証明書を Caddy が自動で取得・更新し、手動での証明書管理は一切不要です。
 
 ```txt:Caddyfile
-# Cloudflare Flexible モード利用時は http:// を明示（Caddy の自動 HTTPS を無効化）
-http://app1.example.com {
+app1.example.com {
     reverse_proxy 127.0.0.1:3001
+    tls {
+        dns cloudflare {env.CF_API_TOKEN}
+    }
 }
 ```
 
-:::message alert
-Flexible モードではオリジンとの通信が暗号化されません。**認証情報（パスワードやセッション Cookie）も Cloudflare-オリジン間では平文で送信されます。** 認証機能を持つサービス（Better Auth 等）を運用する場合は、Full (strict) モードの採用を強く推奨します。Caddy の Cloudflare DNS チャレンジを使えば、オリジン証明書の管理なしで Full (strict) 構成を実現できます。
-:::
-
-個人開発の小規模サービスでは運用の簡潔さを優先して Flexible を選択していますが、認証を扱うサービスについては Full (strict) への移行を検討中です。
+Caddy の Docker イメージには DNS チャレンジ用のプラグインが必要です。`caddy-dns/cloudflare` モジュールを含むカスタムイメージをビルドするか、`caddy-docker-proxy` のようなプラグイン同梱イメージを使います。`CF_API_TOKEN` には Cloudflare API トークン（Zone:DNS:Edit 権限）を環境変数として渡します。
 
 ### Proxy モードによるオリジン IP の秘匿
 
 Cloudflare の Proxy モード（`proxied = true`）を有効にすることで、Hetzner サーバーの実 IP アドレスが DNS から見えなくなります。
 
-これにより、DDoS 攻撃がオリジンに直接到達することを防げます。さらに、Hetzner のファイアウォールで HTTP/HTTPS ポート（80/443）への接続を **Cloudflare の IP レンジのみに制限**しています。
+これにより、DDoS 攻撃がオリジンに直接到達することを防げます。さらに、Hetzner のファイアウォールで HTTPS ポート（443）への接続を **Cloudflare の IP レンジのみに制限**しています。Full (strict) 構成のため、80番ポートは開放していません。
 
 :::details Hetzner Firewall の Cloudflare IP 制限（HCL）
 ```hcl:firewall.tf
-# Hetzner Firewall: HTTP/HTTPS は Cloudflare IP のみ許可
+# Hetzner Firewall: HTTPS は Cloudflare IP のみ許可
 rule {
   direction = "in"
   protocol  = "tcp"
-  port      = "80"
+  port      = "443"
   source_ips = [
     "173.245.48.0/20",
     "103.21.244.0/22",
@@ -211,11 +211,14 @@ services:
   # 他のサービスも同じパターン
 
   caddy:
-    image: caddy:2
+    image: ghcr.io/<user>/caddy-cloudflare:latest  # caddy-dns/cloudflare プラグイン同梱
     restart: unless-stopped
     network_mode: "host"
+    env_file:
+      - /opt/caddy.env  # CF_API_TOKEN を含む
     volumes:
       - /opt/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data  # 証明書の永続化
 ```
 
 ポイントは2つあります。
@@ -457,7 +460,7 @@ Cloud Run で同じ構成を組んだ場合の月1万円前後と比較すると
 
 GCP が好きだからといって、全部を GCP で動かす必要はありません。
 
-Secret Manager は最高だからそのまま使います。Terraform state は GCS に置きます。でもコンピュートは高いから Hetzner に出します。DNS と SSL は Cloudflare が無料で優秀だからそちらを使います。メール送信は AWS SES を使います。
+Secret Manager は最高だからそのまま使います。Terraform state は GCS に置きます。でもコンピュートは高いから Hetzner に出します。DNS と SSL は Cloudflare + Caddy で end-to-end 暗号化しつつ証明書管理も自動化します。メール送信は AWS SES を使います。
 
 **好きなエコシステムの「好きな部分」だけを残して、足りないところを別のサービスで補う。**
 
