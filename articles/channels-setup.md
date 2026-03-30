@@ -3,7 +3,7 @@ title: "Claude Code × Discord連携｜Channelsセットアップとハマりポ
 emoji: "🔌"
 type: "tech"
 topics: ["claudecode", "discord", "channels", "bun", "mcp"]
-published: false
+published: true
 ---
 
 @[docswell](https://www.docswell.com/s/takish/TODO-channels-setup)
