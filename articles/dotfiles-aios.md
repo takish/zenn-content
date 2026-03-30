@@ -47,6 +47,7 @@ chezmoi init --apply https://github.com/yourname/dotfiles
 このコマンド1つで、以下のすべてが再現されます。
 
 - シェル設定（80以上のエイリアス、カスタムプロンプト）
+- ターミナル設定（Ghosttyの設定とカスタムテーマ）
 - tmux設定（セッション別カラーテーマ）
 - Claude Code 65スキル
 - VOICEVOX 約170音声ファイル
@@ -106,10 +107,10 @@ chezmoiの基本思想は「single source of truth」（唯一の信頼できる
 chezmoiのファイル名プレフィックスが、ファイルの属性を宣言的に定義します。
 
 - **`dot_`**: ターゲットで `.` に変換されます（例: `dot_zshrc` → `.zshrc`）
-- **`private_`**: 制限的なパーミッション（0600/0700）を付与します
+- **`private_`**: 制限的なパーミッション（0600/0700）を付与します（例: `private_dot_config/ghostty/` → `~/.config/ghostty/`）
 - **`executable_`**: 実行権限を付与します
 
-このプレフィックス規則により、ファイル名だけで「何が」「どのような権限で」配置されるかを宣言できます。
+このプレフィックス規則により、ファイル名だけで「何が」「どのような権限で」配置されるかを宣言できます。たとえばGhostty（GPUベースのターミナルエミュレータ）の設定ファイルとカスタムテーマは `private_dot_config/ghostty/` 配下で管理しており、`chezmoi apply` でパーミッション付きで配置されます。
 
 ### modify_スクリプトによる動的ファイル管理
 
@@ -267,6 +268,8 @@ chezmoi init
 chezmoi add ~/.zshrc
 chezmoi add ~/.gitconfig
 ```
+
+なお `.gitconfig` にはメールアドレスや credential helper の設定が含まれている場合があります。公開リポジトリで管理する場合は、`chezmoi edit ~/.gitconfig` でソースファイルを確認し、機密性のある行を `.tmpl` テンプレートに変換するか削除してからコミットしてください。
 
 **ステップ2: CLAUDE.mdを追加する**
 Claude Codeを使っているなら、プロジェクトルートにCLAUDE.mdを作成し、基本的なルールを書いてみてください。セキュリティポリシー（sudo禁止、.env保護）だけでも効果があります。
