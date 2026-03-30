@@ -1,29 +1,31 @@
 ---
-title: "dotfilesをAIオペレーティングシステムに進化させる — chezmoi × Claude Code統合の全体像"
+title: "AI OS as Code — dotfilesをAI開発OSに進化させるchezmoi × Claude Code統合の全体像"
 emoji: "🖥️"
 type: "tech"
-topics: ["dotfiles", "chezmoi", "claudecode", "ai", "devenv"]
+topics: ["dotfiles", "chezmoi", "claudecode", "iac", "devenv"]
 published: false
 ---
 
 @[docswell](https://www.docswell.com/s/takish/TODO-dotfiles-aios)
 
-## dotfilesは「設定ファイル集」から「開発OS」へ進化する
+## dotfilesは「設定ファイル集」から「AI OS as Code」へ進化する
 
 dotfilesといえば、`.zshrc` や `.vimrc` をGitHubで管理するもの。多くのエンジニアがそう認識しています。私もかつてはそうでした。
 
 [chezmoi](https://www.chezmoi.io/)（シェモア）を導入してテンプレートやmodify_スクリプトで管理を効率化し、[Claude Code](https://code.claude.com/)（Anthropic社のAIコーディングエージェント）のスキルやフックを追加し、VOICEVOX（音声合成エンジン）による通知を載せ——気がつけば約310ファイル、65スキル、約170音声ファイルを管理するシステムになっていました。もはやこれは「設定ファイル集」ではありません。AI開発ワークフロー全体を駆動するオペレーティングシステムです。
 
-この記事では、chezmoiをカーネル、Claude Codeをランタイムとする6層アーキテクチャの全体像と、その段階的な進化の軌跡を紹介します。「dotfilesの管理、もう少し何とかしたい」と感じている方に、新しい可能性を提示できれば幸いです。
+Terraformが「Infrastructure as Code」でインフラの望ましい状態をコードで宣言し `terraform apply` で収束させるように、このdotfilesリポジトリはAI開発環境の望ましい状態をコードで宣言し `chezmoi apply` で収束させます。私はこのアプローチを **AI OS as Code** と呼んでいます。
+
+この記事では、chezmoiをIaCエンジン、Claude Codeをランタイムとする6層アーキテクチャの全体像と、その段階的な進化の軌跡を紹介します。「dotfilesの管理、もう少し何とかしたい」と感じている方に、新しい可能性を提示できれば幸いです。
 
 ```mermaid
 graph TD
-    L6["Layer 6: 自律パイプライン<br/>（デーモンプロセス）"]
-    L5["Layer 5: ワークフローチェーン<br/>（シェルスクリプト）"]
-    L4["Layer 4: 65スキル＋エージェント<br/>（コマンド群）"]
-    L3["Layer 3: フック＋通知<br/>（イベントハンドラ）"]
-    L2["Layer 2: セキュリティ設定<br/>（セキュリティモジュール）"]
-    L1["Layer 1: chezmoi管理dotfiles<br/>（カーネル）"]
+    L6["Layer 6: 自律パイプライン<br/>（自律エージェント）"]
+    L5["Layer 5: ワークフローチェーン<br/>（CI/CDパイプライン）"]
+    L4["Layer 4: 65スキル＋エージェント<br/>（CLIコマンド群）"]
+    L3["Layer 3: フック＋通知<br/>（イベント駆動）"]
+    L2["Layer 2: セキュリティ設定<br/>（ポリシーエンジン）"]
+    L1["Layer 1: chezmoi管理dotfiles<br/>（IaCエンジン）"]
 
     L6 --> L5 --> L4 --> L3 --> L2 --> L1
 ```
@@ -54,7 +56,7 @@ chezmoi init --apply https://github.com/yourname/dotfiles
 - セキュリティ設定（パーミッション、フック）
 - MCP接続設定（modify_スクリプトによる安全なマージ）
 
-約310ファイルが一気にデプロイされる体験は、「設定ファイル管理」の枠を超えています。OSのインストーラーに近い感覚になります。
+約310ファイルが一気にデプロイされる体験は、「設定ファイル管理」の枠を超えています。`terraform apply` でインフラが立ち上がるのと同じ感覚です。
 
 ただし「1コマンドで再現」には前提条件があります。`chezmoi apply` が再現するのはdotfilesの配置までです。以下は別途手動での設定が必要になります。
 
@@ -65,22 +67,22 @@ chezmoi init --apply https://github.com/yourname/dotfiles
 
 ## 6層アーキテクチャで開発環境全体を構造化する
 
-### OSメタファーで理解する設計思想
+### IaCの視点で理解する設計思想
 
-私のdotfilesは、以下の6層で構成しています。OSの概念に対応させると、それぞれの役割が明確になります。
+私のdotfilesは、以下の6層で構成しています。それぞれをIaC/DevOpsの概念に対応させると、役割が明確になります。
 
-| レイヤー | 役割 | OSでの対応概念 |
-|---------|------|--------------|
-| Layer 1 | chezmoi管理dotfiles（約310ファイル） | カーネル |
-| Layer 2 | Claude Code設定・セキュリティ | セキュリティモジュール |
-| Layer 3 | フック＋通知パイプライン | 割り込みハンドラ |
-| Layer 4 | 65スキル＋エージェント | コマンド群 |
-| Layer 5 | ワークフローチェーン | シェルスクリプト |
-| Layer 6 | 自律パイプライン | デーモンプロセス |
+| レイヤー | 役割 | 対応する概念 |
+|---------|------|------------|
+| Layer 1 | chezmoi管理dotfiles（約310ファイル） | IaCエンジン（Terraform的） |
+| Layer 2 | Claude Code設定・セキュリティ | ポリシーエンジン（OPA/SELinux的） |
+| Layer 3 | フック＋通知パイプライン | イベント駆動（Webhook/EventBridge的） |
+| Layer 4 | 65スキル＋エージェント | CLIコマンド群 |
+| Layer 5 | ワークフローチェーン | CI/CDパイプライン |
+| Layer 6 | 自律パイプライン | 自律エージェント |
 
-chezmoiがカーネルとしてファイル状態を宣言的に管理し、Claude Codeがランタイムとしてスキルやワークフローを実行します。MCPサーバーはデバイスドライバのように外部サービス（GitHub、Slack、ブラウザ）との接続を担っています。
+Terraformがインフラの状態を `.tf` ファイルで宣言し `apply` で収束させるように、chezmoiがファイル状態をソースディレクトリで宣言し `apply` で収束させます。Claude Codeはその上で動くランタイムです。MCPサーバーはAPIゲートウェイのように外部サービス（GitHub、Slack、ブラウザ）との接続を担っています。
 
-<!-- 画像: レイヤー対応表をビジュアル化した図。左にOS概念、右にdotfiles実装を並べる -->
+<!-- 画像: レイヤー対応表をビジュアル化した図。左にIaC/DevOps概念、右にdotfiles実装を並べる -->
 
 ### 主要な統計で見る規模感
 
@@ -100,7 +102,7 @@ chezmoiがカーネルとしてファイル状態を宣言的に管理し、Clau
 
 ### ソース状態からターゲット状態への宣言的管理
 
-chezmoiの基本思想は「single source of truth」（唯一の信頼できるソース）です。`~/.local/share/chezmoi/` にあるソース状態から、`$HOME` のターゲット状態を再現します。OSのカーネルがハードウェア状態を管理するように、chezmoiがファイル状態を管理する仕組みになっています。
+chezmoiの基本思想は「single source of truth」（唯一の信頼できるソース）です。`~/.local/share/chezmoi/` にあるソース状態から、`$HOME` のターゲット状態を再現します。Terraformが `.tf` ファイルからインフラを収束させるように、chezmoiがソースディレクトリからホームディレクトリを収束させる仕組みです。
 
 重要な特性として、chezmoiの操作は冪等（べきとう）です。`chezmoi apply` は何度実行しても同じ結果になります。また、`run_once_` プレフィックスを持つスクリプトは初回のみ実行される仕組みがあり、Homebrewのインストールのような一度だけ必要な初期化処理を安全に定義できます。
 
@@ -230,7 +232,7 @@ graph LR
 
 Claude Codeには複数のエージェントを同時に動かすAgent Teams機能があります。このとき問題になるのが、複数のエージェントが同じgitリポジトリで同時に作業するとコンフリクトが発生する点です。
 
-この問題を、git worktree（1つのリポジトリから複数の作業ディレクトリを作成する機能）で解決しています。各エージェントが独立したworktreeで作業するため、互いのブランチ操作が干渉しません。OSのプロセス分離と同じ考え方になっています。
+この問題を、git worktree（1つのリポジトリから複数の作業ディレクトリを作成する機能）で解決しています。各エージェントが独立したworktreeで作業するため、互いのブランチ操作が干渉しません。CI/CDで並列ジョブごとにワークスペースを分離するのと同じ考え方です。
 
 さらに、TeammateIdleフック（チームメイトのエージェントがアイドル状態になったときに発火するイベント）により、エージェントの稼働状況をリアルタイムに把握できます。スマートフォンからリモートで進捗を監視することも可能になっています。
 
@@ -277,11 +279,11 @@ Claude Codeを使っているなら、プロジェクトルートにCLAUDE.mdを
 **ステップ3: 必要に応じて拡張する**
 通知が欲しくなったらLayer 3を、スキルを体系化したくなったらLayer 4を追加していきます。すべてのレイヤーは独立しているため、必要なものだけを選んで構築できます。
 
-## まとめ — dotfilesは「開発ワークフローの宣言的定義」になる
+## まとめ — AI OS as Code という考え方
 
-dotfilesは「設定ファイル集」ではなく、「開発ワークフローの宣言的定義」に進化できます。chezmoiがファイル状態を宣言的に管理し、Claude Codeがワークフローを実行し、`chezmoi apply` 1コマンドで全環境が再現される。これが6層アーキテクチャの本質になっています。
+Infrastructure as Codeがインフラ管理を変えたように、AI OS as Codeは開発環境の管理を変えます。dotfilesは「設定ファイル集」ではなく、AI開発環境全体の望ましい状態を宣言するコードになります。chezmoiがIaCエンジンとして状態を収束させ、Claude Codeがランタイムとしてワークフローを実行し、`chezmoi apply` 1コマンドで全環境が再現される。これが6層アーキテクチャの本質です。
 
 注意点として、この環境はmacOSに特化しています。Layer 3以上（通知パイプライン、VOICEVOX音声）はmacOS固有のツール（terminal-notifier等）に依存しており、LinuxやWSLで再現するには相応の修正が必要です。また、65スキルと約170音声ファイルの保守コストは小さくありません。Claude Codeの仕様変更があれば影響範囲の確認が必要ですし、CLAUDE.mdの肥大化にも継続的に向き合っています。
 
-それでも、まずは `chezmoi init` と CLAUDE.md の作成から始めてみてください。Layer 1-2だけでも、開発環境の管理体験は大きく変わります。
+それでも、まずは `chezmoi init` と CLAUDE.md の作成から始めてみてください。Layer 1-2だけでも、`terraform apply` のような宣言的な開発環境管理が手に入ります。
 
