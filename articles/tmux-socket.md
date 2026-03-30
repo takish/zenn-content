@@ -206,7 +206,7 @@ tmux-resurrectはセッションのウィンドウ構成、ペインレイアウ
 
 変更点は `-L <name>` の削除だけです。`new -As <name>` の冪等な動作はそのまま活きている。エイリアス名（tc/tw/tv/ti）も変わらないため、移行時に指が覚えたコマンドを変える必要もありませんでした。
 
-`tnew` 関数は、IDE以外の用途でセッションを作りたいときに使います。たとえば `tnew salon-dev` と実行すれば、salon-devという名前のセッションが作成されます。プロジェクトごとにセッションを分ける運用にも対応できるようになっています。
+`tnew` 関数は、IDE以外の用途でセッションを作りたいときに使います。たとえば `tnew web-app` と実行すれば、web-appという名前のセッションが作成されます。プロジェクトごとにセッションを分ける運用にも対応できるようになっています。
 
 `tmux new -As` の `-A` フラグが持つ冪等性は、このアプローチの要です。セッションが存在すればattach、なければ作成。この動作のおかげで、「セッションが既にあるかどうか」を意識する必要がなくなります。
 
@@ -226,21 +226,21 @@ tmuxの `run-shell` コマンドは、実行前にフォーマット変数（`#S
 # セッション名に応じたカラーテーマ
 run-shell "
 case '#S' in \
-  salon-dev)
+  web-app)
     tmux set -s status-bg colour33;   # 青
-    tmux set -s status-left ' salon-dev '
+    tmux set -s status-left ' web-app '
     ;; \
   base)
     tmux set -s status-bg colour34;   # 緑
     tmux set -s status-left ' base '
     ;; \
-  core-dev)
+  api-server)
     tmux set -s status-bg colour166;  # オレンジ
-    tmux set -s status-left ' core-dev '
+    tmux set -s status-left ' api-server '
     ;; \
-  ai-dev)
+  ml-pipeline)
     tmux set -s status-bg colour45;   # シアン
-    tmux set -s status-left ' ai-dev '
+    tmux set -s status-left ' ml-pipeline '
     ;; \
   *)
     # 未定義セッション: MD5ハッシュからカラー自動決定
@@ -265,7 +265,7 @@ esac
 
 設計のポイントは、**固定テーマとフォールバックの二層構造**です。
 
-- **固定テーマ**: 頻繁に使うプロジェクトには事前に色を割り当てる。筆者の環境では10個の固定テーマを定義しており、以下はその一部（salon-dev: 青、base: 緑、core-dev: オレンジ、ai-dev: シアンなど）
+- **固定テーマ**: 頻繁に使うプロジェクトには事前に色を割り当てる。筆者の環境では10個の固定テーマを定義しており、以下はその一部（web-app: 青、base: 緑、api-server: オレンジ、ml-pipeline: シアンなど）
 - **ハッシュベース自動カラー**: 未登録のセッション名に対しては、MD5ハッシュの先頭2文字（16進数）を10進数に変換し、12色パレットのインデックスを算出して自動割り当て
 
 ハッシュベースの自動カラーにより、`tnew experiment` のようにその場で作ったセッションにも、自動的にユニークな色が割り当てられます。同じセッション名は常に同じ色になるため、「cursor は紫、windsurf はオレンジ」のように体が覚えてくれます。
