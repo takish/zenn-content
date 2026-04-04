@@ -1,5 +1,5 @@
 ---
-title: "AI OS as Code — dotfilesをAI開発OSに進化させるchezmoi × Claude Code統合の全体像"
+title: "dotfilesをAI開発環境に進化させる — chezmoi × Claude Code統合の全体像"
 emoji: "🖥️"
 type: "tech"
 topics: ["dotfiles", "chezmoi", "claudecode", "iac", "devenv"]

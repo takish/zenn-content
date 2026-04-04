@@ -1,5 +1,5 @@
 ---
-title: "Claude Code Channelsを安全に使うための多層防御ガイド"
+title: "Claude Code Channelsのセキュリティ対策 — Discord連携の多層防御ガイド"
 emoji: "🛡️"
 type: "tech"
 topics: ["claudecode", "security", "mcp", "discord"]

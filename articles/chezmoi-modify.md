@@ -1,5 +1,5 @@
 ---
-title: "chezmoiのmodify_スクリプトで動的JSONを安全に管理する方法"
+title: "chezmoi modify_スクリプトでdotfilesのJSON設定を安全に管理する"
 emoji: "🔐"
 type: "tech"
 topics: ["chezmoi", "dotfiles", "claudecode", "jq", "json"]

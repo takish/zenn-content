@@ -1,5 +1,5 @@
 ---
-title: "VOICEVOXでAIアシスタントに\"声\"を与える――7キャラ×24パターンの音声通知システムの作り方"
+title: "複数のClaude Codeセッションを声で見分ける — VOICEVOX × セッション別キャラ自動割り当て"
 emoji: "🔊"
 type: "tech"
 topics: ["voicevox", "claudecode", "notification", "tts", "hooks"]

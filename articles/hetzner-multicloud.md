@@ -1,5 +1,5 @@
 ---
-title: "\"Cloud Runが高い\"から始まった、月€4でサービスを量産できるマルチクラウドインフラの全体像"
+title: "Cloud Runが高いから始めた月€4マルチクラウド — Hetzner + Cloud Run構成の全体像"
 emoji: "☁️"
 type: "tech"
 topics: ["hetzner", "gcp", "terraform", "docker", "cloudflare"]

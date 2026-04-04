@@ -1,5 +1,5 @@
 ---
-title: "ターミナル6画面を Cmd+数字 で切り替える ── Ghostty Tab × tmux 3層構成"
+title: "Ghosttyのタブ × tmuxで開発画面を瞬時に切り替える — Cmd+数字のワークスペース設計"
 emoji: "👻"
 type: "tech"
 topics: ["ghostty", "tmux", "terminal", "macos"]

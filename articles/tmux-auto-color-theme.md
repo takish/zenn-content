@@ -1,5 +1,5 @@
 ---
-title: "tmuxセッションを色で見分ける — ハッシュベース自動カラーテーマの実装"
+title: "tmuxの複数セッションを色で自動識別 — ソケット分離とカラーテーマの実装"
 emoji: "🎨"
 type: "tech"
 topics: ["tmux", "terminal", "claudecode", "macos", "shell"]

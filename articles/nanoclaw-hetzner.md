@@ -1,5 +1,5 @@
 ---
-title: "NanoClaw + Hetzner で月€5の常時AI開発環境を構築する"
+title: "月€5でAI開発用VPSを常時稼働させる — Hetzner + NanoClawの構築手順"
 emoji: "🦀"
 type: "tech"
 topics: ["nanoclaw", "hetzner", "claudecode", "docker", "linux"]
