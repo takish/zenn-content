@@ -1,5 +1,5 @@
 ---
-title: "CrashlyticsのログをAIが解析しやすくするための構造化テレメトリ設計"
+title: "Crashlyticsのログを構造化テレメトリに変える — AI解析しやすいログ設計の実践"
 emoji: "🔍"
 type: "tech"
 topics: ["firebase", "crashlytics", "bigquery", "swift", "observability"]

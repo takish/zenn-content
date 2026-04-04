@@ -1,5 +1,5 @@
 ---
-title: "複数のClaude Codeセッションを声で見分ける — VOICEVOX × セッション別キャラ自動割り当て"
+title: "Claude Codeセッションを声で識別する — VOICEVOX × キャラ自動割り当て"
 emoji: "🔊"
 type: "tech"
 topics: ["voicevox", "claudecode", "notification", "tts", "hooks"]

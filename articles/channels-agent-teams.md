@@ -1,5 +1,5 @@
 ---
-title: "スマホからAIチームを指揮する — Claude Code × Discord並列開発術"
+title: "Claude Code × Discordで並列開発 — スマホからエージェントチームを操作する方法"
 emoji: "📱"
 type: "tech"
 topics: ["claudecode", "discord", "agentteams", "tmux", "ai"]

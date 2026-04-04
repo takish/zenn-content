@@ -1,5 +1,5 @@
 ---
-title: "Ollama 0.19がMLXを採用 ─ Apple Siliconのローカル推論はどう変わるか"
+title: "Ollama 0.19のMLX対応でApple Siliconのローカル推論が変わる — 速度比較と実測"
 platform: zenn
 emoji: "🍎"
 type: tech

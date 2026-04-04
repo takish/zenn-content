@@ -1,5 +1,5 @@
 ---
-title: "macOSでGitHubを始める完全ガイド ── ターミナル導入から初pushまで"
+title: "macOSでGitHubを始める手順 — ターミナル導入から初pushまで"
 emoji: "🐙"
 type: "tech"
 topics: ["github", "git", "mac", "cli", "homebrew"]
