@@ -1,314 +1,234 @@
 ---
-title: "学生がAI開発環境を無料で揃える方法 — GitHub Student Packを軸にした最適構成ガイド"
+title: "【学生無料】GitHub Copilotの始め方 — Student Pack申請からVS Codeセットアップまで"
 emoji: "🎓"
-type: "tech"
+type: tech
 topics:
-  - "githubcopilot"
-  - "cursor"
-  - "claude"
-  - "ai"
-  - "github"
+  - github
+  - githubcopilot
+  - studentpack
+  - ai
+  - mac
 published: false
 ---
 
-学生であれば、プロのエンジニアが使う開発環境・AIツール・クラウドサービスのほとんどを無料で利用できます。その中心にあるのがGitHub Student Developer Packです。GitHub Copilotを含む60以上のツールが、学生認証だけで手に入ります。
+プログラミングを始めたばかりの頃、開発ツールの選択肢が多すぎて「結局どれを入れればいいの？」と迷った経験はないでしょうか。AIコーディングツール、クラウドサービス、デザインツール——どれも便利そうだけど、有料のものが多くて手が出しにくい。
 
-この記事では、AI開発を始めたい学生向けに、以下の内容をまとめました。
+学生なら、まずやるべきことは1つです。**GitHub Student Developer Pack**に申請してください。これが通れば、GitHub Copilotを含む100以上のツール・サービスが無料で使えるようになります。
 
-- 日本から申請して実際に通るサービスの整理
-- AIコーディングツール6種の学割比較
-- クラウドGPUや3D/クリエイティブ系ツールの特典
-- コストを抑えた最適構成
+この記事では、GitHub Student Developer Packの申請からGitHub Copilotを使い始めるまでを、ステップバイステップで案内します。
 
 :::message
 この記事の情報は2026年4月時点のものです。各サービスの料金・特典内容は変更される可能性があるため、申請前に公式サイトで最新情報を確認してください。
 :::
 
-## 学生特典の全体像 — 開発・AI・クラウド・クリエイティブが無料になる
+## GitHub Student Developer Packで何が手に入るか
 
-### GitHub Student Developer Packを軸にした特典マップ
+GitHub Student Developer Packは、学生認証を行うだけで開発ツール・サービスが無料または大幅割引で利用できるプログラムです。
 
-GitHub Student Developer Packは、学生認証を行うだけで60以上の開発ツール・サービスが無料または大幅割引で利用できるプログラムです。開発・AI・クラウド・デザインの主要ツールがカテゴリ横断で揃います。
+**特に価値が大きいもの**を抜粋します。
 
-| カテゴリ | サービス | 学生特典 |
+| サービス | 通常料金 | 学生特典 |
 |---------|---------|---------|
-| AI開発 | GitHub Copilot | Pro相当が無料 |
-| AI開発 | Cursor | Pro 1年間無料 |
-| 開発ツール | JetBrains全製品 | 無料（非商用） |
-| 開発ツール | GitHub Pro | 無料 |
-| クラウド | Microsoft Azure | $100クレジット |
-| クラウド | DigitalOcean | $200クレジット |
-| デザイン | Figma | Education Plan無料 |
-| デザイン | Adobe CC | 初年度75-80%OFF |
-| SaaS | Notion | Plus Plan無料 |
-| SaaS | 1Password | 1年間無料 |
-| 3D/CG | Autodesk全製品 | 無料（非商用） |
-| 3D/CG | Blender | 全員無料（OSS） |
+| GitHub Copilot | $10/月 | **Copilot Student（無料）** |
+| GitHub Pro | $4/月 | **無料** |
+| GitHub Codespaces | 従量課金 | **月180コア時間無料** |
+| JetBrains全製品 | $289/年 | **無料（非商用）** |
+| 1Password | $2.99/月 | **1年間無料** |
+| DigitalOcean | 従量課金 | **$200クレジット** |
+| Microsoft Azure | 従量課金 | **$100クレジット** |
+| Notion | $12/月 | **Plus Plan無料** |
 
-これらを合計すると、ソフトウェアだけで年間20万円以上（3D/CG系を含めると数十万円以上）の価値になります。
-
-### 1人でプロダクト開発が完結する構成
-
-学生特典を組み合わせると、企画からデプロイまでの全工程を1人でカバーできます。
-
-```mermaid
-graph LR
-    A[企画<br>Notion] --> B[デザイン<br>Figma]
-    B --> C[開発<br>VS Code + Copilot]
-    C --> D[AI学習<br>Colab / Kaggle]
-    C --> E[デプロイ<br>Azure / DigitalOcean]
-    C --> F[3D/ゲーム<br>Blender + Unity]
-```
-
-Web開発、AI開発、3D/ゲーム開発のいずれの方向に進んでも、初期投資$0で始められます。
-
-## AIコーディングツール6種の学割比較
-
-### 学割の手厚さランキング
-
-AIコーディングツールの学割対応は、サービスごとに大きく異なります。以下は2026年4月時点の比較です。
-
-| ツール | 学生料金 | 通常料金 | 主要機能 | 日本からの利用 |
-|--------|---------|---------|---------|--------------|
-| **GitHub Copilot** | **無料** | $10/月 | コード補完、Chat、Agent Mode、Coding Agent | .ac.jpで通る |
-| **Cursor** | **無料（1年）** | $20/月 | コード補完、Chat、マルチファイル編集 | 学生証で通る |
-| **Gemini** | 終了（延長の可能性あり） | $19.99/月 | Deep Research、NotebookLM、2TB Storage | 要確認 |
-| **Windsurf** | 約$6.90/月（50%以上OFF） | $20/月 | コード補完、Chat、Cascade | .edu前提 |
-| **ChatGPT** | **学割なし** | Go $8/月 | Chat、コード生成 | 大学Edu導入なら無料 |
-| **Claude** | **学割なし** | Pro $20/月〜 | Chat、コード生成、Claude Code | — |
-
-GitHub Copilot（Pro相当が完全無料）とCursor（Pro 1年間無料）が、学割の手厚さで頭ひとつ抜けています。
-
-Google Geminiは2026年3月11日にメインの学生オファーが終了しました。ただし、日本は再認証（SheerID）による延長アクセスの対象国に含まれているため、公式サイトでの確認を推奨します。
-
-ChatGPTとClaudeには、個人向けの公式学割が存在しません。ChatGPTは大学がChatGPT Eduを一括導入していれば無料で使えますが、個人で申請する手段はありません。
-
-### CopilotとCursorは併用できる
-
-GitHub CopilotとCursorは競合するツールに見えますが、実際には併用が可能です。
-
-GitHub Copilotは、VS Code内の拡張機能として動作します。コード補完やCopilot Chatを日常的に使うメインツールとして機能します。一方、CursorはVS Codeをフォークした独立エディタです。プロジェクト単位でエディタを切り替える運用ができます。
-
-両方とも学生は無料で使えるため、実際に試して自分の開発スタイルに合う方をメインにする判断ができます。
-
-### Claude Codeの位置づけ — 補助的パワーツール
-
-Claude Codeは、ターミナルで動作するCLIベースのAI開発ツールです。ファイルの読み書き、コマンド実行、Git操作を自律的に行い、プロジェクト全体を把握した上でコードを生成します。
-
-大規模なリファクタリングや、複数ファイルにまたがるアーキテクチャ変更など、CopilotやCursorでは手が届きにくい領域が得意です。ただし、学割は存在せず、Pro $20/月またはAPI従量課金で利用することになります。
-
-使い分けの方針としては、「普段はCopilotで開発し、重い設計タスクにClaude Code」が合理的です。
-
-## GitHub Copilot学生プランの中身と制限
-
-### 学生プランで使える機能
-
-GitHub Copilotの学生プランは、有料のPro相当の機能を無料で提供します。GitHub Student Developer Packの認証が完了すれば、追加の申請は不要です。
-
-主な機能は以下のとおりです。
-
-- **コード補完**：無制限。タブキーで候補を受け入れるだけで、コーディング速度が大幅に向上します
-- **Copilot Chat**：IDE内およびGitHub.com上で利用可能。コードの説明、バグの特定、リファクタリング提案を受けられます
-- **リファクタリング支援・テスト生成**：選択したコードに対して、改善案やテストコードを自動生成します
-
-さらに、以下の付帯特典も利用できます。
-
-- **GitHub Codespaces**：月180コア時間の無料枠。ブラウザ上でVS Code環境が立ち上がります
-- **GitHub Certifications**：1回分の試験バウチャー（2026年6月30日まで有効）
-
-### Agent ModeとCoding Agent — 半自動開発の実力
-
-Copilotの学生プランには、2つのエージェント機能が含まれます。
-
-**Agent Mode**は、IDE内で動作するマルチステップのコーディングエージェントです。「このバグを修正して」と指示すると、関連ファイルの特定、コード修正、ターミナルコマンドの実行、エラーの修正までを自律的に行います。Agent Modeでは、送信するプロンプトごとにプレミアムリクエストを消費します。使用されるモデルによって消費量が異なる点に注意が必要です。
-
-**Coding Agent**は、GitHub上で動作するエージェントです。IssueをCoding Agentに割り当てると、コードの変更からPR作成までを自動化します。Coding Agentは、タスク割り当て時に1プレミアムリクエストを消費します。
-
-学生プランのプレミアムリクエスト枠は月300回です。通常のコード補完は無制限でプレミアムリクエストを消費しないため、日常的な開発には十分な枠です。
+通常料金を合算すると、年間20万円以上に相当します。この中で最も日常的に使うことになるのがGitHub Copilotです。Copilot StudentプランではAIによるコード補完が無制限で使えます。
 
 :::message
-プレミアムリクエストは、通常のコード補完とは別枠です。コード補完は無制限で利用でき、プレミアムリクエストの消費はありません。
+Copilot Studentは2026年3月に新設されたプランで、Copilot Proとは一部異なります。主な違いは、GPT-5.4やClaude Opus等のプレミアムモデルを手動で選択できない点です（Auto modeでCopilotが最適なモデルを自動選択します）。日常的なコード補完やチャットには影響しません。
 :::
 
-### 2026年3月の変更点 — モデル選択の制限
+## Step 1: GitHubアカウントを作成する
 
-2026年3月12日に、Copilot学生プランのモデル選択に関する変更がありました。GPT-5.4、Claude Opus、Claude Sonnetなどのプレミアムモデルを手動で選択する機能が、学生プランでは利用できなくなりました。
+GitHubアカウントを大学メール（.ac.jp）で作成します。すでにアカウントがある場合はStep 2に進んでください。
 
-ただし、Auto Modeでのアルゴリズム的なモデルルーティングは引き続き利用可能です。Auto Modeでは、タスクの内容に応じてCopilotが最適なモデルを自動選択します。通常の開発作業では、この変更による実質的な影響はほとんどありません。
-
-## 日本の学生が実際に使えるサービスの仕分け
-
-海外サービスの学割は、.eduメールを前提としているケースがあります。日本の大学は.ac.jpドメインを使用するため、すべてのサービスが同じように利用できるわけではありません。
-
-### 安定して通るサービス
-
-以下のサービスは、日本の大学・専門学校の.ac.jpメールまたは学生証で申請が通ります。
-
-| サービス | 認証方法 | 備考 |
-|---------|---------|------|
-| GitHub Student Pack | .ac.jpメール + 学生証画像 | 審査に数日かかる場合あり |
-| JetBrains | 大学メール or GitHub Student Pack | 大学メールなら即承認 |
-| Cursor | .eduメール or 学生証アップロード | SheerID認証 |
-| Figma Education | 学校メール | — |
-| Notion Education | 学校メール | — |
-| Autodesk Education | 学生証等で認証 | Maya, 3ds Max等 |
-| Adobe CC学割 | .ac.jpメール or 学生証 | 日本の公式ストアで購入可 |
+1. ブラウザでGitHubのサインアップページを開く
+2. **メールアドレス**を入力する
+   - **大学のメールアドレス（.ac.jp）を使うことを強く推奨**します。後のStudent Pack申請がスムーズになります
+   - 個人メールで登録済みの場合は、Settings → Emails から大学メールを追加できます
+3. **パスワード**を設定する
+4. **ユーザー名**を決める
+   - 本名に近いものが推奨です（就活やポートフォリオでそのまま使えるため）
+   - 後から変更可能ですが、URLも変わるため最初に決めておく方が楽です
+5. メール認証を済ませる
 
 :::message
-GitHub Student Packの申請が最優先です。Packが承認されると、JetBrainsや1Password、DigitalOceanなどの連携サービスも一括で利用可能になります。
+大学メールを持っていない場合（入学前など）は、個人メールで登録してから後で大学メールを追加する手順でも問題ありません。
 :::
 
-推奨する申請順序は以下のとおりです。
+## Step 2: GitHub Student Developer Packに申請する
 
-```mermaid
-graph TD
-    A[GitHub Student Pack申請] --> B[Copilot有効化]
-    A --> C[JetBrains申請]
-    A --> D[1Password / DigitalOcean等]
-    B --> E[Cursor申請]
-    E --> F[基本構成完成<br>VS Code + Copilot + Cursor]
-```
+GitHub Educationのページから学生証画像をアップロードして申請します。.ac.jpメールなら多くの場合1日以内に承認されます。
 
-GitHub Student Packが起点になるため、まずこの申請を済ませることで後続の手続きがスムーズになります。
+### 申請に必要なもの
 
-### 条件付き・注意が必要なサービス
+| 項目 | 内容 |
+|------|------|
+| GitHubアカウント | 大学メールが紐づいていること |
+| 学生証の画像 | スマホで撮影したもので可 |
+| 在学証明 | 学生証の画像で兼用できる |
 
-以下のサービスは、教育機関の登録状況やメールドメインによって結果が異なります。
+### 申請手順
 
-- **AWS Educate / GCP for Education / Azure for Students**：教育機関がプログラムに登録しているかどうかに依存します。Azure for Studentsは比較的通りやすい傾向があります
-- **Google Gemini学生プラン**：メインの学生オファーは2026年3月に終了しました。日本は延長の可能性がありますが、公式サイトでの確認が必要です
-- **Windsurf**：.eduメール前提のため、.ac.jpで認証が通るかは不明です
-- **ChatGPT**：大学がChatGPT Eduを導入していれば無料で利用できます。個人での学割申請手段はありません
+1. GitHub Educationのページを開く
+2. **「Join Global Campus」**をクリック
+3. **「I'm a student」**を選択
+4. 学校名を入力する
+   - 日本の大学・専門学校・高専も登録されています
+   - 英語表記で入力すると候補が出やすいです（例: `University of Tokyo`, `Tokyo Institute of Technology`）
+   - 見つからない場合は正式名称を手動入力します
+5. **利用目的**を記入する
+   - 英語で簡潔に書けばOKです
+   - 例: `I'm studying computer science and want to use GitHub for coursework and personal projects.`
+6. **学生証の画像をアップロード**する
+   - 名前、学校名、有効期限が読み取れる状態であること
+   - スマホのカメラで撮影したもので通ります
+   - 暗い写真や文字がぼやけているものは再提出を求められることがあります
+7. **Submit**をクリックして送信
 
-### ハードウェア学割の実情
+### 審査の目安
 
-ソフトウェアだけでなく、ハードウェアにも学割があります。
+| 条件 | 審査期間 |
+|------|---------|
+| .ac.jpメールで申請 | 数時間〜1日 |
+| 個人メール + 学生証画像 | 数日〜1週間 |
+| 情報不足で再提出 | さらに数日 |
 
-**PCは学割が手厚い領域です。** Apple、Lenovo、Dellは公式の学生・教職員向け価格を提供しています。Appleの場合、MacBook Airで数千円〜数万円の割引になります。
+.ac.jpメールを使っている場合は、多くのケースで1日以内に承認されます。承認されるとGitHubからメールが届きます。
 
-**周辺機器は学割が弱い領域です。** マウスやキーボードなどの周辺機器メーカーは、学割をほとんど提供していません。
-
-**オーディオインターフェースは一部対応です。** Focusriteは教育割引を提供しており、音楽制作やポッドキャスト制作をする学生にとって有力な選択肢です。Universal AudioやAntelopeは学割対象外のため、セール時期を狙うことになります。
-
-## 開発周辺の学割 — クラウドGPU・3D・デザイン・SaaS
-
-### クラウドGPU — AI学習に使える無料環境
-
-機械学習やディープラーニングの学習には、GPUが必要です。以下のサービスは学生に限らず全員が無料で利用できますが、AI開発のオンボーディングには欠かせません。
-
-| サービス | GPU | 特徴 |
-|---------|-----|------|
-| Google Colab | T4 / P100 | ブラウザで即利用可。セッション制限あり |
-| Kaggle Notebooks | T4 / P100 | Colabより安定。長時間セッション対応 |
-| Lightning AI | 無料枠あり | AI/ディープラーニング特化 |
-| SageMaker Studio Lab | 無料 | AWSアカウント・クレカ不要 |
-
-Google ColabとKaggleは、Pythonの機械学習コードを動かす環境として定番です。Kaggleの方がセッションの安定性が高く、長時間の学習ジョブに向いています。
-
-### 3Dモデリング・ゲーム開発
-
-3D/CG分野は、学生特典が非常に充実しています。
-
-| ソフト | 提供元 | 学生特典 | 備考 |
-|--------|--------|---------|------|
-| Blender | Blender Foundation | **全員無料（OSS）** | 学割不要。商用利用もOK |
-| Maya / 3ds Max等 | Autodesk | **全製品無料** | 教育ライセンス、非商用限定 |
-| Cinema 4D + ZBrush等 | Maxon | **$9.99/6ヶ月** | 通常年$1,400相当のバンドル |
-| Houdini | SideFX | **Apprentice版が無料** | フル機能、非商用限定 |
-| Unity | Unity Technologies | **Student Plan無料** | ゲーム/インタラクティブ開発 |
-| Unreal Engine | Epic Games | **個人利用は全員無料** | プロダクトごとの総収益100万ドルまでロイヤリティなし |
-
-Blenderはオープンソースソフトウェアのため、そもそも学割という概念がありません。誰でも完全無料で、商用利用も可能です。Autodeskは、Maya・3ds Max・AutoCAD・Fusionなど、ほぼ全製品を教育ライセンスで無料提供しています。
+Student Packの有効期限は通常2年間（または卒業まで）です。期限が近づくと更新手続きの案内が届きます。JetBrainsなど一部のサービスは年次更新が必要なため、メールの確認を忘れないようにしてください。
 
 :::message alert
-Autodesk・JetBrains・Maxonの教育ライセンスは非商用限定です。フリーランスの仕事や業務委託での使用はライセンス違反になります。
+**よくある審査落ちの原因**
+- 学生証の画像がぼやけていて文字が読めない
+- 学生証に有効期限が記載されていない（裏面に記載されている場合は裏面もアップロード）
+- GitHubプロフィールに情報がほとんどない（簡単なプロフィールを埋めておくと通りやすい）
 :::
 
-### デザイン・SaaS・その他
+## Step 3: GitHub Copilotを有効化する
 
-| サービス | 学生特典 | 備考 |
-|---------|---------|------|
-| Adobe CC | 初年度75-80%OFF（月約1,738円） | 2年目から4,180円/月。時期により変動 |
-| Figma | Education Plan無料 | 学校メール必須 |
-| Notion | Plus Plan無料 | AI add-onは提供状況が変更されている可能性あり |
-| 1Password | 1年間無料 | GitHub Student Pack経由 |
-| JetBrains全製品 | 無料 | 非商用限定。卒業後40%OFF |
+Student Packの承認後、GitHubの設定画面からCopilotを有効化します。追加の申請は不要です。
 
-1Passwordは、開発者にとって重要なセキュリティツールです。GitHub Student Pack経由で1年間無料になるため、このタイミングでパスワード管理の習慣を身につけておくことをおすすめします。
+1. GitHubのSettings → Copilot を開く
+2. **「Enable GitHub Copilot」**をクリック
+   - Student Packが承認されていれば、料金は表示されません（$0/月）
+3. **Suggestions matching public code**の設定を確認する
+   - 「Allowed」にすると、公開コードと一致するコード補完も表示されます
+   - 学習目的で個人プロジェクトに使う範囲であれば「Allowed」で問題ありません。商用プロジェクトではライセンス確認が必要になる場合があります
+4. 設定を保存する
 
-## コスト比較 — 学生が意識すべき料金構造
+これでGitHub側の設定は完了です。
 
-### 学生が無料で使えるツールの価値換算
+## Step 4: VS Codeに GitHub Copilot をインストールする
 
-学生特典をフル活用した場合の年間節約額を整理します。
+VS Code（Visual Studio Code）にCopilot拡張機能をインストールし、コード補完が動作することを確認します。
 
-| ツール | 通常料金 | 学生料金 | 年間節約額 |
-|--------|---------|---------|----------|
-| GitHub Copilot Pro | $10/月 | 無料 | 約$120（約18,000円） |
-| Cursor Pro | $20/月 | 無料（1年） | 約$240（約36,000円） |
-| JetBrains All Products | $289/年 | 無料 | 約$289（約43,000円） |
-| Figma Professional | $12/月 | 無料 | 約$144（約21,600円） |
-| Notion Plus | $12/月（年払い$10） | 無料 | 約$144（約21,600円） |
-| Autodesk全製品 | 年数十万円 | 無料 | 数十万円 |
-| Adobe CC | 約7,780円/月 | 約1,738円/月 | 約72,500円/年 |
+### VS Codeのインストール
 
-Autodesk以外のソフトウェアだけでも年間約20万円以上の節約になります。Autodeskの製品群（Maya, 3ds Maxなど）は通常価格が非常に高額なため、3D/CG系の学生は特に恩恵が大きくなります。
+VS Codeが未インストールの場合は、まずインストールします。
 
-### 有料AIツールのコスト感
+macOSの場合、Homebrewがインストール済みであればターミナルで以下を実行するのが最も簡単です。
 
-学割がないAIツールを使う場合のコスト感も把握しておく必要があります。
+```bash
+brew install --cask visual-studio-code
+```
 
-| ツール | 料金 | 備考 |
-|--------|------|------|
-| Claude Code（Pro） | $20/月 | claude.aiではOpus 4.6利用可。Claude CodeはMax推奨 |
-| Claude Code（API従量課金） | 約$6/日（平均） | 利用量で変動 |
-| ChatGPT Go | $8/月 | Deep Research・Codex・Agent Mode非対応 |
-| Gemini Advanced | $19.99/月 | 学生トライアル終了後 |
+Homebrewがない場合は、Visual Studio Codeの公式サイトから.dmgをダウンロードしてインストールします。
 
-Claude Codeの場合、学生の利用頻度であれば月$20〜50程度が現実的な範囲です。無料のCopilotとCursorをメインに据えて、Claude Codeは「必要なときだけ使うパワーツール」として位置づけるのがコスト効率の良い運用です。
+### Copilot拡張機能のインストール
 
-## 最適構成 — 学生AI開発環境のベストプラクティス
+1. VS Codeを起動する
+2. 左サイドバーの**拡張機能アイコン**（四角が4つ並んだアイコン）をクリック
+3. 検索窓に `GitHub Copilot` と入力
+4. **「GitHub Copilot」**をインストールする
+   - 「GitHub Copilot Chat」も一緒にインストールされます
+5. VS Code右下に表示される**「Sign in to GitHub」**をクリック
+6. ブラウザが開くのでGitHubアカウントでログインする
+7. VS Codeに戻ると、Copilotが有効化されている
 
-### 基本構成（コスト$0）
+### 動作確認
 
-まずは以下の3つを揃えます。これだけで日常の開発は完結します。
+新しいファイルを作成して、Copilotが動作することを確認します。
 
-| 役割 | ツール | 入手方法 |
-|------|--------|---------|
-| エディタ | VS Code | 無料（全員） |
-| AI支援 | GitHub Copilot | GitHub Student Pack（無料） |
-| バージョン管理 | GitHub Pro | GitHub Student Pack（無料） |
+```python
+# test.py を作成して以下を入力
+def hello():
+    # ここまで入力すると、Copilotがグレーの文字で候補を提案する
+    # 例: print("Hello, World!") のような補完が表示される
+```
 
-この構成のコストは$0です。コード補完は無制限、Agent Modeでの半自動開発も月300回まで利用できます。
+グレーの文字で補完候補が表示されたら、**Tabキー**で受け入れます。これがCopilotのコード補完です。
 
-### 拡張構成（用途に応じて追加）
+補完が表示されない場合は、VS Code右下のCopilotアイコンを確認してください。アイコンに斜線が入っている場合は、クリックしてCopilotを有効にします。
 
-基本構成に加えて、開発の方向性に応じてツールを追加します。すべて無料または低コストで利用可能です。
+## Step 5: Copilot ChatとAgent Modeを試す
 
-| 用途 | ツール | コスト |
-|------|--------|--------|
-| AIエディタ（併用） | Cursor | 無料（1年） |
-| Java/Kotlin/Python IDE | JetBrains | 無料（非商用） |
-| UI/UXデザイン | Figma Education | 無料 |
-| プロジェクト管理 | Notion Education | 無料 |
-| クラウドデプロイ | Azure for Students / DigitalOcean | 無料クレジット |
-| AI学習（GPU） | Google Colab / Kaggle | 無料 |
-| 3Dモデリング | Blender + Autodesk | 無料 |
-| 重い設計タスク | Claude Code | $20/月〜 |
+コード補完に加えて、Copilot ChatとAgent Modeも試してみます。どちらもCopilot Studentプランに含まれています。
 
-### 学生のうちに経験しておく価値
+### Copilot Chat
 
-学生特典の多くは、在学中のみ有効です。卒業後はGitHub Copilotが$10/月、JetBrainsが$289/年（卒業後40%OFFあり）の通常料金に切り替わります。
+1. VS Codeで**Ctrl + Cmd + I**（macOS）を押す
+2. Chat viewが開く
+3. 質問を入力する
 
-プロと同じ環境で開発を経験しておくことで、就職後の立ち上がりが早くなります。特にCopilotのAgent ModeやCoding Agentは、チーム開発の現場でも利用が広がっている機能です。
+```
+Pythonでフィボナッチ数列を返す関数を書いて
+```
 
-在学中のみ有効な特典が多いため、早めに申請しておくと選択肢が広がります。
+Copilot Chatは、コードの説明、バグの特定、リファクタリングの提案など、開発中のさまざまな場面で使えます。
+
+### Agent Mode
+
+Copilotには**Agent Mode**があります。Agent Modeでは、Copilotが複数のステップを自律的に実行します。
+
+1. **Cmd + Shift + I**（macOS）を押すとAgent Modeに切り替わる
+   - または、Chat viewを開いた状態でモードピッカーから「Agent」を選択する
+2. プロンプトを入力する
+   - 例: `このプロジェクトにREADME.mdを作成して`
+
+Agent Modeでは、ファイルの作成・編集、ターミナルコマンドの実行までCopilotが行います。ただし、Agent Modeの操作はプレミアムリクエストを消費します（Copilot Studentプランは月300回）。通常のコード補完は無制限でプレミアムリクエストを消費しないため、日常的な開発には影響しません。
+
+## Student Packが通ったら追加で申請できるサービス
+
+GitHub Student Packが起点になると、以下のサービスも連鎖的に利用可能になります。余裕があるときに追加で申請しておくと便利です。
+
+| 優先度 | サービス | 申請方法 | 得られるもの |
+|--------|---------|---------|-------------|
+| **高** | JetBrains | 大学メール or Student Pack連携 | IntelliJ, PyCharm等の全IDE |
+| **高** | Cursor | .eduメール or 学生証アップロード（SheerID） | AIエディタ Pro 1年無料 |
+| 中 | Figma Education | 学校メール | デザインツール無料 |
+| 中 | Notion Education | 学校メール | Plus Plan無料 |
+| 中 | 1Password | Student Pack経由 | パスワード管理1年無料 |
+| 低 | DigitalOcean | Student Pack経由 | $200クラウドクレジット |
+| 低 | Azure for Students | 学校メール | $100クラウドクレジット |
+
+CursorはVS Codeベースの独立AIエディタです。GitHub Copilotとは異なるアプローチでAIコーディング支援を行うため、両方試してみて自分に合う方をメインにする判断ができます。どちらも学生は無料です。
+
+:::message
+Cursorの学生プランは.eduメールが前提です。日本の.ac.jpメールでSheerID認証が通るかはケースによります。通らない場合は学生証画像のアップロードで対応できます。
+:::
+
+## 学割がないAIツールとのコスト感
+
+GitHub CopilotとCursorは学生無料ですが、学割のないAIツールもあります。
+
+| ツール | 料金 | 位置づけ |
+|--------|------|---------|
+| Claude Code | Pro $20/月〜 | ターミナルベースのAI開発ツール。大規模リファクタリング向き |
+| ChatGPT | Go $8/月 | 汎用チャットAI。大学がChatGPT Eduを導入していれば無料 |
+
+まずはCopilot（無料）で開発を進めて、「もっと強力なAI支援がほしい」と感じたタイミングで有料ツールを検討する流れが合理的です。
 
 ## まとめ
 
-- GitHub Student Developer Packが、学生AI開発環境の起点になります
-- AIコーディングツールは、GitHub Copilot（無料）とCursor（1年無料）が最も手厚い学割を提供しています
-- ChatGPTとClaudeには公式学割がなく、有料ツールとして割り切る必要があります
-- 日本からの申請では、.ac.jpメールで通るサービスを優先するのが確実です
-- 3D・クラウドGPU・デザインも含めると、年間数十万円分の環境が無料で手に入ります
-- 基本構成（VS Code + GitHub Copilot）はコスト$0で、ほとんどの開発シーンをカバーします
+- **GitHub Student Developer Packに申請する**のが最初の一歩です。これが���れば100以上のツール・サービスが無料で使えます
+- 申請には**大学メール（.ac.jp）**を使うとスムーズです。審査は多くの場合1日以内に完了します
+- Student Packが承認されたら、**VS Code + GitHub Copilot**をセットアップします。コード補完が無制限で使えるようになります
+- 余裕があるときに**Cursor、JetBrains、Figma**などを追加で申請しておくと、開発環境がさらに充実します
+- 学割のないAIツール（Claude Code、ChatGPT）は、必要になったタイミングで検討すれば十分です
