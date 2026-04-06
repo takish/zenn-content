@@ -1,12 +1,10 @@
 ---
-title: "Claude Codeセッションを声で識別する — VOICEVOX × キャラ自動割り当て"
+title: "Claude Codeの通知をVOICEVOXで音声化 — セッションごとにキャラが変わる仕組みを作った"
 emoji: "🔊"
 type: "tech"
 topics: ["voicevox", "claudecode", "notification", "tts", "hooks"]
 published: false
 ---
-
-@[docswell](https://www.docswell.com/s/takish/TODO-voicevox-notification)
 
 ## はじめに
 
@@ -16,7 +14,13 @@ AIコーディングアシスタントは黙々と働きますが、人間の注
 
 この問題を、VOICEVOX音声通知で解消しました。本記事ではその設計と実装を紹介します。168ファイルの事前生成音声、セッションごとに自動で変わるキャラクター、音声ファイルがない環境でも動作するフォールバック。実運用で磨いてきた仕組みの全体像です。
 
-> スクリプトの完全なソースコードは [GitHub (takish/dotfiles)](https://github.com/takish/dotfiles) の `dot_claude/hooks/` および `dot_claude/scripts/` にあります。本記事では設計判断の「なぜ」を中心に解説し、コードは要点を抜粋して掲載します。
+> 本記事では設計判断の「なぜ」を中心に解説し、コードは要点を抜粋して掲載します。実装の全体像がつかめるよう、各スクリプトの主要部分を記事内に含めています。
+
+**この記事でわかること:**
+- Claude Code Hooksで音声通知を設定する方法
+- VOICEVOX音声を事前生成（プリレンダリング）して遅延ゼロで再生する設計
+- セッションIDからキャラクターを自動割り当てする仕組み（MD5ハッシュ）
+- 音声ファイルがない環境でも動作する2段階フォールバック
 
 ## 音声通知で解消する「サイレント問題」
 
@@ -76,11 +80,11 @@ Claude Codeのフックシステムは、特定のイベントが発生したと
           },
           {
             "type": "command",
-            "command": "~/.claude/hooks/terminal-notify.sh '確認' '権限リクエスト' '$MESSAGE'"
+            "command": "~/.claude/hooks/terminal-notify.sh"
           },
           {
             "type": "command",
-            "command": "~/.claude/hooks/slack-notify.sh '$MESSAGE'"
+            "command": "~/.claude/hooks/slack-notify.sh"
           }
         ]
       }
@@ -126,9 +130,9 @@ Claude Codeのフックシステムは、特定のイベントが発生したと
 
 `matcher`フィールドで発火条件を細かく制御できます。`Notification`イベントであれば、`permission_prompt`のときは`permission`カテゴリ、`idle_prompt`のときは`idle`カテゴリと使い分けが可能です。
 
-> **`$MESSAGE`変数について**: commandフィールド内の`'$MESSAGE'`はシングルクォートで囲まれていますが、Claude Codeのフックシステムがコマンド実行時にこの変数を展開します。シェルではなくClaude Code側が展開するため、シェルメタ文字によるインジェクションリスクは低い設計です。
+> **フックへのデータ受け渡し**: Claude Codeのフックシステムは、イベント情報をJSON形式でスクリプトのstdinに渡します。`terminal-notify.sh`や`slack-notify.sh`はこのJSONを`jq`でパースして通知内容を構築しています。`voicevox-play.sh`も同様にstdinから`session_id`を取得してキャラクター選択に利用します。
 
-## 168ファイルのプリレンダリング音声
+## VOICEVOX音声のプリレンダリング — 168ファイルの事前生成
 
 ### なぜリアルタイム合成ではないのか
 
@@ -223,8 +227,8 @@ echo "$VOICES" | while IFS=: read -r key text; do
     output_file="$OUTPUT_DIR/${key}.wav"
 
     # Step 1: テキストから音声クエリ生成
-    QUERY=$(curl -s -X POST "$API_URL/audio_query" \
-        -H "Content-Type: application/json" \
+    # --get で GET リクエストに変換し、--data-urlencode でクエリパラメータを付与
+    QUERY=$(curl -s "$API_URL/audio_query" \
         --get --data-urlencode "text=$text" \
         --data-urlencode "speaker=$SPEAKER_ID")
 
@@ -238,7 +242,7 @@ done
 
 新しいキャラクターやセリフを追加したい場合のみ、VOICEVOX Engineをローカルで起動してこのスクリプトを実行します。日常の再生にはEngineは不要です。
 
-> 完全なスクリプトは [generate-voices.sh (GitHub)](https://github.com/takish/dotfiles/blob/main/dot_claude/scripts/executable_generate-voices.sh) を参照してください。プリセット切り替え、Speaker ID自動検出、日本語キャラクター名のマッピングなどを含む完全版です。
+> 実際のスクリプトにはプリセット切り替え、Speaker ID自動検出、日本語キャラクター名のマッピングなども含まれています。
 
 ### カスタム方言 --- タコピーモード
 
@@ -356,7 +360,7 @@ export VOICEVOX_MODE=se              # VOICEVOX音声を使わずSEのみ再生
 | 環境変数 | デフォルト値 | 説明 |
 |---------|-----------|------|
 | `VOICEVOX_CHARACTER` | （セッションIDから自動決定） | キャラクターを固定指定 |
-| `VOICEVOX_VOLUME` | `0.7` | 再生音量（0.0〜1.0） |
+| `VOICEVOX_VOLUME` | `0.7` | 再生音量（`afplay -v`に渡す値。1.0が通常音量） |
 | `VOICEVOX_MUTE` | `0` | `1`にすると全音声を無効化 |
 | `VOICEVOX_MODE` | （未設定） | `se`にするとVOICEVOX音声を使わずSEのみ再生 |
 
@@ -434,7 +438,7 @@ AIコーディングアシスタントの「サイレント問題」は、音声
 
 ずんだもんに「完了しました」と言ってもらえるだけでも、作業中の体験はだいぶ変わりました。
 
-> スクリプトの完全版: [takish/dotfiles](https://github.com/takish/dotfiles)（`dot_claude/hooks/`、`dot_claude/scripts/`）
+> スクリプトの構成: `hooks/voicevox-play.sh`（再生）、`hooks/terminal-notify.sh`（デスクトップ通知）、`scripts/generate-voices.sh`（音声生成）
 
 **VOICEVOXキャラクター音声の利用に関する注意**: VOICEVOXのキャラクター音声を利用する場合、`VOICEVOX:キャラクター名`（例: `VOICEVOX:ずんだもん`）のクレジット表記が必要です。詳しくは各キャラクターの利用規約をご確認ください。
 
