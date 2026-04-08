@@ -17,13 +17,17 @@ created: 2026-04-08
 
 Claude Codeには `-p`（`--print`）という非対話実行フラグがあります。CIパイプライン、Gitフック、シェルスクリプトなど、人間がターミナルに張り付かなくても Claude にタスクを任せられる仕組みです。
 
-以前は「ヘッドレスモード」と呼ばれていましたが、現在は[Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)エコシステムの一部として位置づけられています。単なる非対話実行ではなく、構造化出力・スキーマ指定・ストリーミング・会話継続まで備えた自動化インターフェースです。
+以前は「ヘッドレスモード」と呼ばれていましたが、現在は[Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)エコシステムの一部として位置づけられています。単なる非対話実行ではなく、構造化出力・スキーマ指定・ストリーミング・会話継続まで備えた自動化インターフェースです。
 
 この記事では、基本的な使い方から `--bare`・`--json-schema`・ファンアウトパターンまで、実際のCI・スクリプト用途に即した実践パターンを整理します。
 
-:::message
-動作確認環境: macOS 14+, Claude Code CLI（2026年4月時点）
-:::
+## 前提・環境
+
+| 項目 | 内容 |
+|------|------|
+| OS | macOS（Windows/Linuxでも動作） |
+| Claude Code | v2.x 系（2026年4月時点） |
+| 対象読者 | Claude Codeをインタラクティブに使っており、CI/スクリプト連携に興味があるエンジニア |
 
 ## `claude -p` とは — 非対話実行の基本
 
@@ -62,7 +66,7 @@ git diff | claude -p "Review these changes for potential issues"
 
 ### Claude Agent SDKとの関係
 
-`claude -p` は単独のフラグではなく、[Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)エコシステムの一部として位置づけられています。Agent SDKはPython（`claude-agent-sdk`）とTypeScript（`@anthropic-ai/claude-agent-sdk`）のパッケージも提供しており、CLIはその中で最もシンプルなエントリーポイントです。
+`claude -p` は単独のフラグではなく、[Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)エコシステムの一部として位置づけられています。Claude Agent SDKはPython（`claude-agent-sdk`）とTypeScript（`@anthropic-ai/claude-agent-sdk`）のパッケージも提供しており、CLIはその中で最もシンプルなエントリーポイントです。
 
 ```mermaid
 graph LR
