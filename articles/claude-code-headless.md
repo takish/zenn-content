@@ -60,19 +60,21 @@ git diff | claude -p "Review these changes for potential issues"
 
 `-p` モードでもデフォルトではCLAUDE.md、フック、MCPサーバーがロードされます。これが次に紹介する `--bare` で変わります。
 
-### Agent SDKエコシステムの中での位置づけ
+### Claude Agent SDKとの関係
 
-`claude -p` は単独のフラグではなく、Agent SDKエコシステムの一部として位置づけられています。Anthropicは Python SDK と TypeScript SDK も提供しており、CLIはその中で最もシンプルなエントリーポイントです。
+`claude -p` は単独のフラグではなく、[Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)エコシステムの一部として位置づけられています。Agent SDKはPython（`claude-agent-sdk`）とTypeScript（`@anthropic-ai/claude-agent-sdk`）のパッケージも提供しており、CLIはその中で最もシンプルなエントリーポイントです。
 
 ```mermaid
 graph LR
-    A[Agent SDK] --> B[Python SDK]
-    A --> C[TypeScript SDK]
+    A[Claude Agent SDK] --> B["Python (claude-agent-sdk)"]
+    A --> C["TypeScript (@anthropic-ai/claude-agent-sdk)"]
     A --> D["CLI (claude -p)"]
     D --> E[シェルスクリプト]
     D --> F[CI/CD]
     D --> G[Gitフック]
 ```
+
+なお、以前は「Claude Code SDK」という名称でしたが、コーディング以外のエージェント用途にも対応するため「Claude Agent SDK」にリネームされています。SDKではデフォルトでClaude Codeのシステムプロンプトやファイルシステム設定（CLAUDE.md等）を読み込まない設計になっており、CLIの `--bare` と同じ方向性です。
 
 CLIでプロトタイプを組んで、複雑な制御が必要になったらSDKに移行する——という段階的なアプローチが取れます。
 
@@ -344,4 +346,6 @@ claude -p "Continue that review" --resume "$session_id"
 
 `--bare` は将来的に `-p` のデフォルト動作になる予定です（時期は未定）。今のうちから `--bare` 前提で構成しておくと、移行時に変更が不要です。
 
-`--json-schema` による構造化出力と組み合わせると、Claudeの出力を後続スクリプトが確実にパースできるパイプラインを構築できます。より複雑な制御が必要になった場合は、Agent SDK（Python / TypeScript）への移行も選択肢になります。
+`--json-schema` による構造化出力と組み合わせると、Claudeの出力を後続スクリプトが確実にパースできるパイプラインを構築できます。より複雑な制御が必要になった場合は、[Claude Agent SDK](https://platform.claude.com/docs/en/agent-sdk/overview)（`claude-agent-sdk` / `@anthropic-ai/claude-agent-sdk`）への移行も選択肢になります。
+
+---
