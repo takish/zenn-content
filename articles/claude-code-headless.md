@@ -1,5 +1,5 @@
 ---
-title: "claude -p 実践パターン集 — --bare・--json-schema・ファンアウトでCI自動化"
+title: "Claude Code -p（ヘッドレス）実践パターン集 — CI自動化・構造化出力・ファンアウト"
 platform: zenn
 emoji: "⚡"
 type: tech
